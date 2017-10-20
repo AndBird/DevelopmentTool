@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="300dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/custom_dialog_bg">
+    
+        <TextView 
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:gravity="center"
+        android:textColor="#EE7942"
+        android:textSize="@dimen/font_size_8"
+        android:text="@string/update_intro"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="15dp"/>
+    
+    <View 
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="#CCCCCC"/>
+    
+    <ListView 
+        android:id="@+id/logListView"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="15dp"
+        android:dividerHeight="0px"
+        android:listSelector="@color/transparent_color"
+        android:scrollbars="none"
+        android:overScrollMode="never">
+    </ListView>
+
+    
+    <TextView 
+        android:id="@+id/start_download"
+        android:layout_width="100dp"
+        android:layout_height="30dp"
+        android:background="@drawable/dlg_ok_button_bg"
+        android:textColor="@color/white"
+        android:text="下载"
+        android:gravity="center"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="15dp"/>
+</LinearLayout>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="transparent_color">#00000000</color>
+    <color name="white">#ffffff</color>
+    <color name="black">#000000</color>
+    <color name="dlg_ok_text_color">#BFEFFF</color>
+    <color name="dlg_cancel_text_color">#CCCCCC</color>
+    <color name="dlg_msg_text_color">#000000</color>
+    <color name="dlg_title_text_color">#000000</color>
+    <color name="dlg_cancel_button_bg_color">#607B8B</color>
+    <color name="dlg_ok_button_bg_color">#1C86EE</color>
+    <color name="dlg_background_color">#EAEAEA</color>
+</resources>

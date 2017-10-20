@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    	<LinearLayout 
+    	     android:layout_width="match_parent"
+		    android:layout_height="match_parent"
+		    android:orientation="vertical" 
+		    android:gravity="center">
+    	     <TextView 
+            android:id="@+id/download_state"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:layout_marginTop="10dp"
+        	android:text="正在下载..."
+        	android:textSize="16sp"/>
+          
+		    <ProgressBar 
+		        android:id="@+id/download_bar"
+		        android:layout_width ="430px"
+			    android:layout_height="10px"
+			    android:layout_marginTop="10dp"
+			    android:max="100"
+			    style="@android:style/Widget.ProgressBar.Horizontal"
+			    android:progressDrawable="@drawable/downloading_progress_bg"
+		        android:visibility="invisible"/>
+		    
+		    <RelativeLayout 
+		        android:layout_width="430px" 
+		        android:layout_height="wrap_content"
+		        android:layout_marginTop="5dp">
+		        <TextView 
+		            android:id="@+id/download_size"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            android:layout_alignParentLeft="true"
+		            android:textSize="10sp" />
+		        
+		         <TextView 
+		            android:id="@+id/download_progrss"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            android:layout_alignParentRight="true"
+		            android:textSize="10sp"/>
+		    </RelativeLayout>
+		    
+		    <TextView 
+		        android:id="@+id/restart_download"
+		        android:layout_width="100dp"
+		        android:layout_height="30dp"
+		        android:background="@drawable/dlg_ok_button_bg"
+		        android:textColor="@color/white"
+		        android:text="继续下载"
+		        android:gravity="center"
+		        android:layout_gravity="center_horizontal"
+		        android:layout_marginTop="30dp"
+		        android:layout_marginBottom="15dp"
+		        android:visibility="invisible"/>
+    	</LinearLayout>
+         
+	    
+	    <TextView
+        android:layout_width="99dp"
+        android:layout_height="28dp"
+        android:text="更新demo"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="12dp" />
+</RelativeLayout>

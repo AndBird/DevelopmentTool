@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent" 
+              android:gravity="center">
+                <LinearLayout android:layout_width="wrap_content"
+                    		  android:minWidth="280dp"
+                    		  android:layout_height="wrap_content"
+                              android:minHeight="150dp"
+                              android:orientation="vertical"
+                              android:background="@drawable/custom_dialog_white_bg">
+                    <TextView android:layout_width="match_parent"
+                              android:layout_height="wrap_content"
+                              android:layout_marginTop="15dp"
+                              android:singleLine="true"
+                              android:ellipsize="end"
+                              android:gravity="center_horizontal"
+                              android:textColor="@color/dlg_title_text_color"
+                              android:textSize="@dimen/font_size_8"
+                              android:id="@+id/dlg_title"/>
+                    
+                       <TextView
+                           android:id="@+id/dlg_msg"
+                           android:layout_width="wrap_content"
+                           android:layout_height="wrap_content"
+                           android:layout_gravity="center_horizontal"
+                           android:layout_marginTop="15dp"
+                           android:textColor="@color/dlg_msg_text_color"
+                           android:textSize="@dimen/font_size_7"/>
+
+
+                    <LinearLayout android:layout_width="match_parent"
+                                  android:layout_height="30dp"
+                                  android:orientation="horizontal"
+                                  android:layout_marginTop="40dp"
+                                  android:layout_marginBottom="15dp">
+                                 <LinearLayout 
+                                  android:layout_width="0dp"
+                                  android:layout_weight="1"
+                                  android:layout_height="match_parent"
+                                  android:orientation="vertical"
+                                  android:gravity="center_horizontal">
+                                      <TextView android:layout_width="wrap_content"
+	                                  android:layout_height="match_parent"
+	                                  android:paddingLeft="20dp"
+	                                  android:paddingRight="20dp"
+	                                  android:gravity="center_vertical"
+	                                  android:text="@string/dlg_button_cancel"
+	                                  android:textColor="@color/white"
+	                                  android:textSize="@dimen/font_size_7"
+	                                  android:background="@drawable/dlg_cancel_button_bg"
+	                                  android:id="@+id/dlg_cancel"/>
+                                 </LinearLayout>
+                                 
+                                   <LinearLayout 
+                                  android:layout_width="0dp"
+                                  android:layout_weight="1"
+                                  android:layout_height="match_parent"
+                                  android:orientation="vertical"
+                                  android:gravity="center_horizontal">
+                                      <TextView android:layout_width="wrap_content"
+	                                  android:layout_height="match_parent"
+	                                  android:paddingLeft="20dp"
+	                                  android:paddingRight="20dp"
+	                                  android:gravity="center_vertical"
+	                                  android:text="@string/dlg_button_confirm"
+	                                  android:textColor="@color/white"
+	                                  android:textSize="@dimen/font_size_7"
+	                                  android:background="@drawable/dlg_ok_button_bg"
+	                                  android:id="@+id/dlg_confirm"/>
+                                 </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+</LinearLayout>

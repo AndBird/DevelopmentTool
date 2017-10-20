@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+     <!-- 更新模块 -->
+    <string name="update_intro">更新说明</string>
+    <string name="force_update">此版本是强制更新</string>
+    <string name="exit_force_update">此版本是强制更新,如果不更新将退出应用</string>
+
+    <string name="update_dlg_title">版本更新</string>
+    <string name="update_dlg_msg">此次更新是强制更新,如果选择不更新将无法使用,您确定不更新?</string>
+    <string name="update_now">立即更新</string>
+    <string name="update_late">稍后再说</string>
+    <string name="update_network_tips">您没有网络连接</string>
+    <string name="update_tips1">您现在处于WIFI网络模式中,\n将要更新约</string>
+    <string name="update_tips2">MB的程序包\n</string>
+    <string name="update_tips3">您现在处于2G/3G网络模式中,\n将要更新约</string>
+    <string name="update_tips4">由于您的网络异常,下载资源缺失,请重新下载!</string>
+    <string name="update_tips5">您的网络状况太差,建议在wifi环境下下载更新,或下载完整客户端直接安装!</string>
+    
+     <!-- dlg -->
+    <string name="dlg_button_cancel">取消</string>
+    <string name="dlg_button_confirm">确定</string>
+    <string name="dlg_button_exit">退出应用</string>
+    <string name="dlg_msg_notice">提示</string>
+    
+     <string name="update_fail">检测失败</string>
+	 <string name="current_version_is_newest">已经是最新版本了</string>
+	 <string name="current_version_is_old">当前不是最新版本,是否下载？</string>
+	 <string name="update_download_finish">更新包已下载完成, 是否安装?</string>
+	 <string name="download_fail">下载失败</string>
+	 
+	 <string name="stop_app_update_download">应用正在更新中，是否退出？</string>
+	 <string name="no_network">网络未连接</string>
+	 <string name="download_in_background">后台下载</string>
+	 <string name="available_memory_space_no_enough">存储空间不足</string>
+
+</resources>
