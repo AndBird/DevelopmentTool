@@ -182,7 +182,7 @@ public class TimeTool {
             else
             {
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                time = sdf.format(sdf.parse(time));
+                time = sdf.format(timesamp);
             }
         } catch (Exception e)
         {

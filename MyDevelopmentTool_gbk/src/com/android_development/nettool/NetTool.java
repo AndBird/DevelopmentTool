@@ -162,7 +162,7 @@ public class NetTool {
             conn.setRequestProperty("Content-Type",
                     "application/x-www-form-urlencoded");
             // 维持长连接
-            conn.setRequestProperty("Connection", "Keep-Alive");
+            //conn.setRequestProperty("Connection", "Keep-Alive");
             // 设置浏览器编码
             conn.setRequestProperty("Charset", "UTF-8");
             DataOutputStream dos = new DataOutputStream(conn.getOutputStream());
@@ -269,12 +269,12 @@ public class NetTool {
     /**
      * 将InputStream 流读取 utf-8
     * */
-    public static String InputStreamToString(InputStream in) {
+    public static String InputStreamToString2(InputStream in) {
     	if(in == null){
     		return null;
     	}
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-        byte[] data = new byte[1024 *1024];
+        byte[] data = new byte[1024];
         int count = -1;
         String content = null;
         try {
@@ -305,6 +305,38 @@ public class NetTool {
 		}
         return content;
     }
+    
+    /**
+     * 将InputStream 流读取 utf-8
+    * */
+    public static String InputStreamToString(InputStream in) {
+		if(in == null){
+			return null;
+		}
+		StringBuffer sbBuffer = new StringBuffer();
+		byte[] data = new byte[1024];
+		int count = -1;
+		try {
+			while ((count = in.read(data, 0, 1024)) != -1) {
+				sbBuffer.append(new String(data, 0, count));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}finally{
+			data = null;
+			try {
+				if(in != null){
+					in.close();
+					in = null;
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return sbBuffer.toString();
+	}
+
 
     //网络请求时中文参数转换
     public void zh(String data){

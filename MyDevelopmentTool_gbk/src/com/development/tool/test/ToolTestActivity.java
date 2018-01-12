@@ -7,10 +7,9 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-
 import com.android_development.nettool.NetDataRequest;
+import com.android_development.stringtool.AesEncryptor;
 import com.development.android.tool.R;
-import com.development.android.tool.R.layout;
 
 public class ToolTestActivity extends Activity {
     /**
@@ -55,5 +54,9 @@ public class ToolTestActivity extends Activity {
 				ToolTestActivity.this.finish();
 			}
 		});
+        
+        AesEncryptor aes = new AesEncryptor();
+        aes.setKey("1234567890123456");
+        Log.e("aes", aes.encrypt("123"));
     }
 }
