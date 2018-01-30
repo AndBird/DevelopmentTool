@@ -9,12 +9,16 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.android_development.tool.DebugUtils;
+
 
 /**
  * Created by Administrator on 2016/4/12.
@@ -248,4 +252,59 @@ public class AppTool {
             home.addCategory(Intent.CATEGORY_HOME);
             context.startActivity(home);
     }
+    
+   /**
+    *  判断辅助服务是否开启
+    *  @param context : 用于获取辅助服务所在应用的包名
+    *  @param serviceClass : 辅助服务类
+    *  */
+    public static boolean isAccessibilitySettingsOn(Context context, Class serviceClass) {
+		final String service = context.getPackageName() + "/" + serviceClass.getName();
+		DebugUtils.debug(TAG, "service:" + service);
+		return isAccessibilitySettingsOn(context, service);
+	}
+    
+    
+    /**
+     *  判断辅助服务是否开启
+     *  @param context : 用于获取辅助服务所在应用的包名
+     *  @param accessibilityServiceString : 辅助服务类string ,格式：应用包名/AccessibilityService类的包名.AccessibilityService类名
+     *  
+     *  如：com.accessibilityservices.demo./com.test.accessibilityservice.TestAccessibilityService
+     *  */
+     public static boolean isAccessibilitySettingsOn(Context context, String accessibilityServiceString) {
+ 		int accessibilityEnabled = 0;
+ 		// TestService为对应的服务
+ 		DebugUtils.debug(TAG, "serviceString:" + accessibilityServiceString);
+ 		try {
+ 			accessibilityEnabled = Settings.Secure.getInt(context.getContentResolver(),
+ 					android.provider.Settings.Secure.ACCESSIBILITY_ENABLED);
+ 			DebugUtils.debug(TAG, "accessibilityEnabled = " + accessibilityEnabled);
+ 		} catch (Settings.SettingNotFoundException e) {
+ 			DebugUtils.debug(TAG, "Error finding setting, default accessibility to not found: " + e.getMessage());
+ 		}
+ 		TextUtils.SimpleStringSplitter mStringColonSplitter = new TextUtils.SimpleStringSplitter(':');
+
+ 		if (accessibilityEnabled == 1) {//系统设置中有辅助服务开启，未开启任何辅助服务时返回的是0
+ 			DebugUtils.debug(TAG, "***ACCESSIBILITY IS ENABLED*** -----------------");
+ 			String settingValue = Settings.Secure.getString(context.getContentResolver(),
+ 					Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES);
+ 			DebugUtils.debug(TAG, "settingValue=" + settingValue);
+ 			if (settingValue != null) {
+ 				mStringColonSplitter.setString(settingValue);
+ 				while (mStringColonSplitter.hasNext()) {
+ 					String accessibilityService = mStringColonSplitter.next();
+
+ 					DebugUtils.debug(TAG, "accessibilityService=" + accessibilityService + " , " + accessibilityServiceString);
+ 					if (accessibilityService.equalsIgnoreCase(accessibilityServiceString)) {
+ 						DebugUtils.debug(TAG, "We've found the correct setting - accessibility is switched on!");
+ 						return true;
+ 					}
+ 				}
+ 			}
+ 		} else {
+ 			DebugUtils.debug(TAG, "***ACCESSIBILITY IS DISABLED***");
+ 		}
+ 		return false;
+ 	}
 }

@@ -127,6 +127,14 @@ public class DebugUtils {
 		}
 	}
 	
+	public static void printInfo(String TAG, String msg) {
+		try {
+			debug(TAG, msg);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	private static String getThrowableInfo(Throwable ex) {
 		String str = null;
 		try {

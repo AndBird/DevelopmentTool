@@ -15,7 +15,6 @@ import com.android_development.tool.DebugUtils;
 import com.android_development.uitool.CustomDialogUtils;
 import com.android_development.uitool.CustomDialogUtils.CustomDialogClickListener;
 import com.development.android.tool.R;
-import com.development.tool.test.AppUpdateMainActivity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -48,7 +47,7 @@ public class AppUpdateManager{
 	public static final int Download_STATUS_SUCCESSFUL = 2;
 	public static final int Download_TATUS_RUNNING = 3;
 	
-	private static AppUpdateManager instance = new AppUpdateManager();
+	private static volatile AppUpdateManager instance = new AppUpdateManager();
 	private Context mContext;
 	
 	//更新相关
@@ -56,7 +55,6 @@ public class AppUpdateManager{
 	private String saveDir;//下载保存目录
     private String saveFilePath;//下载完整路径
     private String saveFileName;//下载文件名
-    private static Class mainActivity;
     
     //下载线程
     private Thread downLoadThread;
@@ -88,7 +86,12 @@ public class AppUpdateManager{
     
     private UpdateDataReceiveListener mUpdateDataReceiveListener = null;
     public interface UpdateDataReceiveListener{
-    	public void analyzeVersionInfo(String data);//更新信息分析
+    	/**
+    	 * 解析更新信息
+    	 * 
+    	 * 注:需同步执行，不要开线程
+    	 * */
+    	public void analyzeVersionInfo(String data);
     }
     
     public static AppUpdateManager getInstance(){
@@ -119,8 +122,8 @@ public class AppUpdateManager{
 		}else{
 			saveFilePath =  saveDir + File.separator + saveFileName;
 		}
-		DebugUtils.debug(TAG, "this.downloadUrl = " + this.downloadUrl);
-		DebugUtils.debug(TAG, "saveFilePath = " + saveFilePath);
+		DebugUtils.printInfo(TAG, "this.downloadUrl = " + this.downloadUrl);
+		DebugUtils.printInfo(TAG, "saveFilePath = " + saveFilePath);
 		this.canShowDialog = true;
 		startDownload();
 	}
@@ -193,13 +196,13 @@ public class AppUpdateManager{
      * */
     public void startCheckUpdate(Activity context, boolean showCheckToast, String updateCheckUrl, UpdateDataReceiveListener updateDataReceiveListener){
     	try {
-    		DebugUtils.debug(TAG, "startCheckUpdate");
+    		DebugUtils.printInfo(TAG, "startCheckUpdate");
     		initParams(context, showCheckToast, updateCheckUrl, updateDataReceiveListener);
     		 //检测更新
             SharePreferenceTool.setPrefBoolean(context, VERSION_IS_NOW, false);//先重置保存的版本号是否是最新标记
             if(NetTool.isNetworkConnected(context)){
             	if(checkUpdating){
-    				DebugUtils.debug(TAG, "startCheckUpdate: has another Thread checkUpdating");
+    				DebugUtils.printInfo(TAG, "startCheckUpdate: has another Thread checkUpdating");
     				return;
     			}
             	new Thread(new Runnable() {
@@ -218,18 +221,18 @@ public class AppUpdateManager{
     
 	private void checkUpdate(){
 		try{
-			DebugUtils.debug(TAG,"checkUpdate");
+			DebugUtils.printInfo(TAG,"checkUpdate");
 			checkUpdating = true;
 			String versionInfo = getVersionInfoFromServer();
-			DebugUtils.debug(TAG, "ServerVersionInfo:" + versionInfo);
+			DebugUtils.printInfo(TAG, "ServerVersionInfo:" + versionInfo);
 			if(versionInfo != null){
-				DebugUtils.debug(TAG, "getupdateinfo = " + versionInfo);
+				DebugUtils.printInfo(TAG, "getupdateinfo = " + versionInfo);
 				if(mUpdateDataReceiveListener != null){
 					mUpdateDataReceiveListener.analyzeVersionInfo(versionInfo);
 				}
-				DebugUtils.debug(TAG, "serverVersionName = " + serverVersionName + " lowVersionName=" + lowVersionName);
+				DebugUtils.printInfo(TAG, "serverVersionName = " + serverVersionName + " lowVersionName=" + lowVersionName);
 					
-				if(serverVersionName == null || lowVersionName == null || downloadUrl == null){
+				if(TextUtils.isEmpty(serverVersionName) || TextUtils.isEmpty(lowVersionName) || TextUtils.isEmpty(downloadUrl)){
 					checkUpdating = false;
 					return;
 				}
@@ -239,16 +242,16 @@ public class AppUpdateManager{
 				SharePreferenceTool.setPrefString(mContext, DOWNLOAD_URL, downloadUrl);//保存下载地址
 					
 				if((Float.compare(Float.valueOf(curVersionName), Float.valueOf(serverVersionName)) >= 0)){
-					DebugUtils.debug(TAG, "checkUpdate() 不需要更新");
+					DebugUtils.printInfo(TAG, "checkUpdate() 不需要更新");
 					mHandler.sendEmptyMessage(CHECK_UPDATE_LATEST);
 				}else{
-					DebugUtils.debug(TAG, "checkUpdate() 需要更新");
+					DebugUtils.printInfo(TAG, "checkUpdate() 需要更新");
 					//判断是不是必须更新
 					force_update = checkIsForceUpdate();
 					if(force_update){
-						DebugUtils.debug(TAG, "checkUpdate() 强制更新");
+						DebugUtils.printInfo(TAG, "checkUpdate() 强制更新");
 					}else{
-						DebugUtils.debug(TAG, "checkUpdate() 非强制更新");
+						DebugUtils.printInfo(TAG, "checkUpdate() 非强制更新");
 					}
 					if(TextUtils.isEmpty(saveFilePath) || TextUtils.isEmpty(saveFileName)){
 						this.saveFileName = mContext.getPackageName() + "_" + serverVersionName + ".apk";
@@ -258,11 +261,11 @@ public class AppUpdateManager{
 							saveFilePath =  saveDir + File.separator + saveFileName;
 						}
 					}
-					DebugUtils.debug(TAG, "checkUpdate() saveFilePath=" + saveFilePath);
+					DebugUtils.printInfo(TAG, "checkUpdate() saveFilePath=" + saveFilePath);
 					showUpdateLogWindow();//显示更新日志
 				}
 			}else{	//检测更新失败  提示
-				DebugUtils.debug(TAG, "check fail info is null");
+				DebugUtils.printInfo(TAG, "check fail info is null");
 				checkUpdating = false;
 				if(showCheckToast){
 					mHandler.sendEmptyMessage(CHECK_UPDATE_FAIL);
@@ -272,7 +275,7 @@ public class AppUpdateManager{
 		}catch(Exception e){
 			checkUpdating = false;
 			e.printStackTrace();
-			DebugUtils.debug(TAG, "Exception err = " + e.toString());
+			DebugUtils.printInfo(TAG, "Exception err = " + e.toString());
 		}finally{
 			checkUpdating = false;
 		}
@@ -281,11 +284,12 @@ public class AppUpdateManager{
 	//获取服务器版本信息
 	private String getVersionInfoFromServer(){
 		try{
-			String url = updateCheckUrl;
+			String url = updateCheckUrl + mContext.getPackageName();
+			DebugUtils.printInfo(TAG, "update url=" + url);
 			InputStream in = NetTool.getInputStreamByGet(url);
 			return  NetTool.InputStreamToString(in);
 		}catch(Exception e){
-			DebugUtils.debug(TAG, "getVersionInfoFromServer err:" + e.toString());
+			DebugUtils.printInfo(TAG, "getVersionInfoFromServer err:" + e.toString());
 			return null;
 		}
 	}
@@ -317,7 +321,7 @@ public class AppUpdateManager{
 	 * @param lowVersionName : 最低使用版本号(用于强更)
 	 * @param curVersionName : 当前版本号(不一定与AndroidManifest.xml中的versionName一致)
 	 * @param downloadUrl: 更新下载地址
-	 * @param updateLog: 更新日志
+	 * @param updateLogList: 更新日志
 	 * @param saveDir : 下载保存目录(完整)
 	 * 
 	 * */
@@ -414,13 +418,13 @@ public class AppUpdateManager{
 						downloadFile.createNewFile();
 					}
 				}
-				DebugUtils.debug(TAG + "/Runnable", "saveFileLength = " + saveFileLength);
+				DebugUtils.printInfo(TAG + "/Runnable", "saveFileLength = " + saveFileLength);
 				
 				//int len = getApkFileSize();
 				//DebugUtils.printInfo(TAG, "get size from url=" + len);
 				
 				URL url = new URL(downloadUrl);			
-				DebugUtils.debug(TAG, "下载url=" + downloadUrl);
+				DebugUtils.printInfo(TAG, "下载url=" + downloadUrl);
 				HttpURLConnection conn = (HttpURLConnection)url.openConnection();
 				conn.setDoInput(true);
 				//conn.setDoOutput(true); //开启后下载异常,默认值为false
@@ -432,7 +436,7 @@ public class AppUpdateManager{
 				conn.connect();
 				
 				int length = conn.getContentLength();
-				DebugUtils.debug(TAG + "/Runnable", "download file size = " + length);
+				DebugUtils.printInfo(TAG + "/Runnable", "download file size = " + length);
 				if(-1 != length){
 					InputStream is = conn.getInputStream();
 					RandomAccessFile fos = new RandomAccessFile(downloadFile, "rwd");
@@ -518,7 +522,7 @@ public class AppUpdateManager{
      */
 	private void downloadApk(){
 		if(downloading){
-			DebugUtils.debug(TAG, "downloadApk: has another Thread downloading");
+			DebugUtils.printInfo(TAG, "downloadApk: has another Thread downloading");
 			return ;
 		}
 		
@@ -535,7 +539,7 @@ public class AppUpdateManager{
             return;
         }    
         Intent i = new Intent(Intent.ACTION_VIEW);
-        DebugUtils.debug(TAG + "/installApk", "filename = " + "file://" + apkfile.toString());
+        DebugUtils.printInfo(TAG + "/installApk", "filename = " + "file://" + apkfile.toString());
         i.setDataAndType(Uri.parse("file://" + apkfile.toString()), "application/vnd.android.package-archive"); 
         mContext.startActivity(i);
 	}
@@ -577,7 +581,7 @@ public class AppUpdateManager{
 			e.printStackTrace();
 		}finally{
 			if(flag == false){
-				 DebugUtils.debug(TAG, "checkApkFileIsAll 解析apk失败");
+				 DebugUtils.printInfo(TAG, "checkApkFileIsAll 解析apk失败");
 			}
 		}
 		return flag;
@@ -621,29 +625,28 @@ public class AppUpdateManager{
 			//android.os.Process.killProcess(android.os.Process.myPid());
 			instance = null;
 		}
-		
-		/**
-		 * 设置App主界面Class(不一定是入口Activity),用于强制退出程序(对于强更)
-		 * */
-		public void setMainActivityClass(Class mainActivity){
-			this.mainActivity = mainActivity;
-		}
-		
+
 		/**
 		 * 
 		 * 退出程序
 		 * 通过跳转到更新首界面(程序主界面，不一定是入口Activity)终止程序
 		 * */
 		public static void exitApp(Context activity){
+			DebugUtils.printInfo(TAG, "exitApp");
 			try {
+				//需先finish,否则在日志界面会导致强更退出应用失效
+				if(activity instanceof Activity){
+					((Activity)activity).finish();  
+				}
+				
 				Intent intent = new Intent();   
-				intent.setClass(activity, mainActivity);  
-				//mainActivity不一定是程序的入口,只对主界面生效
+				intent.setClass(activity, UpdateEmptyActivity.class);  
 				//Intent intent = activity.getPackageManager().getLaunchIntentForPackage(activity.getPackageName());
 				intent.putExtra(UPDATE_CANCEL_EXIT_APP, true);
-				intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); //注意本行的FLAG设置  
+				//intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); //注意本行的FLAG设置  
+				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);//需和Intent.FLAG_ACTIVITY_NEW_TASK一起使用
+				intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 				activity.startActivity(intent);  
-				//activity.finish();  
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -651,7 +654,7 @@ public class AppUpdateManager{
 		
 		//下载完成弹出对话框是否安装
 		private void showInstallDialog() {
-			DebugUtils.debug(TAG + "/showInstallConfirmDialog", "showInstallConfirmDialog");
+			DebugUtils.printInfo(TAG + "/showInstallConfirmDialog", "showInstallConfirmDialog");
 			AlertDialog dialog = CustomDialogUtils.showCustomDialog(mContext, R.string.dlg_msg_notice, R.string.update_download_finish, 
 					R.string.dlg_button_confirm, R.string.dlg_button_cancel, new CustomDialogClickListener() {
 						

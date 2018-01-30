@@ -47,6 +47,12 @@
             android:screenOrientation="portrait"
 			android:configChanges="orientation|keyboardHidden|screenSize"
 			android:theme="@style/FullScreenStyle"></activity>
+          
+           <!-- 强制更新退出程序终止界面 -->
+           <activity android:name="com.android_development.tool.update.UpdateEmptyActivity"
+            android:screenOrientation="portrait"
+			android:configChanges="orientation|keyboardHidden|screenSize"
+			android:theme="@style/Translucent_fullScreenStyle"></activity>
         <!-- end 检测更新  -->
     </application>
 </manifest>

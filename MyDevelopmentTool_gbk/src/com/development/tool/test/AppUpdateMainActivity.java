@@ -34,8 +34,6 @@ public class AppUpdateMainActivity extends Activity {
 					list.add("更新内容2更新内容更新内容\n更新内容更新内容\n更新内容\n更新内容更新内容更新内容更新内容更新内容");
 					list.add("更新内容3更新内容更新内容\n更新内容更新内容\n更新内容\n更新内容更新内容更新内容\n更新内容更新内容更新内容更新内容更新内容更新内容");
 					AppUpdateManager.getInstance().setAnalyzeVersionInfo2(serverVersion, low_version, AppUpdateConfig.APP_CUR_VERSION, downloadUrl, list, AppUpdateConfig.filePath);
-					//必须设置
-					AppUpdateManager.getInstance().setMainActivityClass(AppUpdateMainActivity.class);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

@@ -1,22 +1,23 @@
 package com.android_development.jsontool;
 
-import com.android_development.tool.LogUtil;
-import com.android_development.tool.ToolBase;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
  * 功能: 解析Json对象
  */
-public class JsonTool extends ToolBase{
+public class JsonTool{
     private final static String TAG = JsonTool.class.getName();
-    private static boolean printLog = false; //打印日志
-
-    public static void setPrintLog(boolean printLog) {
-        JsonTool.printLog = printLog;
-    }
-
+    /**
+     * 一些读取失败的默认值*/
+    public final static int intErrorValue = -1;
+    public final static long longErrorValue = -1;
+    public final static short shortErrorValue = (short)-1;
+    public final static double doubleErrorValue = -1;
+    public final static float floatErrorValue = -1;
+    public final static String stringErrorValue = "";
+    public final static boolean booleanDefaultValue = false;
+    
     /*
         * return jsonObject or null
         * */
@@ -141,14 +142,14 @@ public class JsonTool extends ToolBase{
     /* *
   * return stringValue or errorValue
   */
-    private String fromJsonObjGetString(String key, JSONObject obj){
+    public static String fromJsonObjGetString(String key, JSONObject obj){
         return fromJsonObjGetString(key, obj, stringErrorValue);
     }
 
     /* *
     * return stringValue or defaultValue
     */
-    private String fromJsonObjGetString(String key, JSONObject obj, String defaultValue){
+    public static String fromJsonObjGetString(String key, JSONObject obj, String defaultValue){
         try {
             if(obj != null && key != null && obj.has(key)){
                 return obj.getString(key);
@@ -158,11 +159,5 @@ public class JsonTool extends ToolBase{
             e.printStackTrace();
         }
         return defaultValue;
-    }
-
-    private static void printLog(String msg){
-        if(printLog){
-            LogUtil.printLogE(TAG, msg);
-        }
     }
 }
