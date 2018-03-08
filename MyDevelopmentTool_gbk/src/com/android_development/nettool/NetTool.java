@@ -243,6 +243,7 @@ public class NetTool {
             //如果打算使用 URL 连接进行输入，则将 DoInput 标志设置为 true；如果不打算使用，则设置为 false。默认值为 true。  
             conn.setDoInput(true);
             conn.setRequestMethod("GET");
+            //conn.setRequestProperty("User-agent", "");
             // post方式不能使用缓存
             conn.setUseCaches(false);
             conn.setInstanceFollowRedirects(true);
@@ -252,7 +253,7 @@ public class NetTool {
             // 配置本地连接的content-type
             conn.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
             // 维持长连接
-            conn.setRequestProperty("Connection", "Keep-Alive");
+            //conn.setRequestProperty("Connection", "Keep-Alive");
             // 设置浏览器编码
             conn.setRequestProperty("Charset", "UTF-8");
             if (200 == conn.getResponseCode()) {

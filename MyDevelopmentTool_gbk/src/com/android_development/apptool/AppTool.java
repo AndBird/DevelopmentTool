@@ -167,6 +167,8 @@ public class AppTool {
 
     /**
      * 将应用放到前端显示:
+     * @param context ： 用activity不能将应用带到前端
+     * 
      * 法一:按home键退出，再通过此方法启动有5秒钟的延迟，且需要用while循环来重复才有效,对于用intent回到桌面的，一次即可。
      * 法二:法二不存在法一的问题
      */
