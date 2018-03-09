@@ -219,11 +219,33 @@ public class AppTool {
             //法三，通过广播启动
 
 
-//			//法四
-            Intent in = context.getPackageManager().getLaunchIntentForPackage(pack);
+        	/**
+			 * 
+			 * 法四(可能会多次启动，非切换后台到前台，需要在入口activity加入
+			 * if((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0){
+			 * 		finish();
+			 * 		return;
+			 *	} ,但是这样对于一些非自我开发的app，就没办法了)
+			 * 
+			 * 
+			 * */
+            /*Intent in = context.getPackageManager().getLaunchIntentForPackage(pack);
             in.setFlags(Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-            in.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY);
-            context.startActivity(in);
+            in.addFlags(Intent.FLAG_FROM_BACKGROUND | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY);
+            context.startActivity(in);*/
+        	
+        	//法五
+        	Intent intent = context.getPackageManager().getLaunchIntentForPackage(pack);
+			//Log.e(TAG, "class=" + intent.getComponent());
+			String className = intent.getComponent().getClassName();
+			//Log.e(TAG, "class=" + className);
+			
+			intent = new Intent();
+			intent.addCategory(Intent.CATEGORY_LAUNCHER);
+			intent.setAction(Intent.ACTION_MAIN);
+			intent.setClassName(pack, className);
+			intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+			context.startActivity(intent);
         } catch (Exception e) {
             e.printStackTrace();
         }
