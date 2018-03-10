@@ -221,14 +221,19 @@ public class AppTool {
 
         	/**
 			 * 
-			 * 法四(可能会多次启动，非切换后台到前台，需要在入口activity加入
+			 * 法四:
+			 * 当启动其他应用时没问题;
+			 * 但是当启动应用自身时，可能会多次启动，非切换后台到前台，需要在入口activity加入
 			 * if((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0){
 			 * 		finish();
 			 * 		return;
-			 *	} ,但是这样对于一些非自我开发的app，就没办法了)
+			 *	} ,最好是用方法5
 			 * 
 			 * 
 			 * */
+			/*Intent in = getPackageManager().getLaunchIntentForPackage(getPackageName());
+			in.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			startActivity(in);*/
             /*Intent in = context.getPackageManager().getLaunchIntentForPackage(pack);
             in.setFlags(Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
             in.addFlags(Intent.FLAG_FROM_BACKGROUND | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY);
