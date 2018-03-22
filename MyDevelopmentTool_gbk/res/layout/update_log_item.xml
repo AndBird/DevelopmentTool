@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
         android:textColor="@color/black"
-        android:textSize="@dimen/font_size_7"/>
+        android:textSize="@dimen/font_sp_size_7"/>
 
      <TextView 
         android:id="@+id/log_msg"
@@ -18,5 +18,5 @@
         android:layout_marginLeft="6dp"
         android:layout_marginBottom="10dp"
         android:textColor="@color/black"
-        android:textSize="@dimen/font_size_7"/>
+        android:textSize="@dimen/font_sp_size_7"/>
 </LinearLayout>

@@ -20,7 +20,7 @@
  						    android:layout_width="wrap_content"
  						    android:layout_height="wrap_content"
  						    android:layout_marginLeft="10dp"
- 						    android:textSize="@dimen/font_size_8"
+ 						    android:textSize="@dimen/font_sp_size_8"
  						    android:textColor="@color/dlg_msg_text_color"/>
               </LinearLayout>
 </LinearLayout>

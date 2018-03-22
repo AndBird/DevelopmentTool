@@ -10,7 +10,7 @@
         android:layout_height="40dp"
         android:gravity="center"
         android:textColor="#EE7942"
-        android:textSize="@dimen/font_size_8"
+        android:textSize="@dimen/font_sp_size_8"
         android:text="@string/update_intro"
         android:layout_marginLeft="15dp"
         android:layout_marginRight="15dp"
