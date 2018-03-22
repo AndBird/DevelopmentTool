@@ -71,6 +71,22 @@ public class ScreenTool {
         return (px / context.getResources().getDisplayMetrics().scaledDensity);
     }
     
+    
+    /**
+     * spתdp
+     */
+    public static int sp2dp(Context context, int sp) {
+    	int px = sp2px(context, sp);
+    	return convertPxToDp(context, px);
+    }
+    
+    /**
+     * dpתsp
+     */
+    public static float dp2sp(Context context, int dp) {
+    	int px = convertDpToPx(context, dp);
+    	return px2sp(context, px);
+    }
 
 //    public static int dip2px(Context context, float dpValue) {
 //        final float scale = context.getResources().getDisplayMetrics().density;

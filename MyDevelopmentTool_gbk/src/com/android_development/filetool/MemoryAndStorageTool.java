@@ -188,10 +188,10 @@ public class MemoryAndStorageTool {
                                         //System.out.println("杀进程  包名:" + pkg + ",pid=" + pid);
                                         mActivityManager.killBackgroundProcesses(pkg);
 
-                                        //要系统权限
-//					            		 Method forceStopPackage = mActivityManager.getClass().getDeclaredMethod("forceStopPackage", String.class);
-//					                     forceStopPackage.setAccessible(true);
-//					                     forceStopPackage.invoke(mActivityManager, pkg);
+                                        //forceStopPackage(包名),要系统权限：<uses-permission android:name="android.permission.FORCE_STOP_PACKAGES"/>
+					            		//Method forceStopPackage = mActivityManager.getClass().getDeclaredMethod("forceStopPackage", String.class);
+					                    //forceStopPackage.setAccessible(true);
+					                    //forceStopPackage.invoke(mActivityManager, pkg);
                                     }
                                 }
                             }
