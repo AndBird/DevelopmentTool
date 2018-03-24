@@ -6,8 +6,10 @@ import android.app.ActivityManager.RunningAppProcessInfo;
 import android.app.ActivityManager.RunningTaskInfo;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
 import android.provider.Settings;
 import android.text.TextUtils;
@@ -336,4 +338,19 @@ public class AppTool {
  		}
  		return false;
  	}
+     
+     
+     public static boolean isSystemApplication(PackageManager packageManager, String packageName) {
+         if (packageManager == null || packageName == null || packageName.length() == 0) {
+             return false;
+         }
+
+         try {
+             ApplicationInfo app = packageManager.getApplicationInfo(packageName, 0);
+             return (app != null && (app.flags & ApplicationInfo.FLAG_SYSTEM) > 0);
+         } catch (NameNotFoundException e) {
+             e.printStackTrace();
+         }
+         return false;
+     }
 }
