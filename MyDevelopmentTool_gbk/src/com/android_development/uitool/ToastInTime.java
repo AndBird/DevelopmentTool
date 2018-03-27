@@ -11,40 +11,74 @@ import android.widget.Toast;
 public class ToastInTime {
 	public static final int LENGTH_LONG =  Toast.LENGTH_LONG;
 	public static final int LENGTH_SHORT =  Toast.LENGTH_SHORT;
-	private static ToastInTime instance = null;
+	private volatile static ToastInTime instance = null;
 	
 	private View v;
     private Toast it;
+    private boolean isInited = false;
     
-    public ToastInTime(Context context) {
+    private ToastInTime(Context context){
 		init(context);
 	}
     
-    public static ToastInTime getInstance(Context context){ 
-    	if(instance == null){
-    		instance = new ToastInTime(context);
-    	}
-    	return instance;
-    }
-    
-    public ToastInTime() {
+    private ToastInTime(){
+    	isInited = false;
 	}
     
-    /**
+    /** 
+	 * 
+	 *  */
+	public static ToastInTime getInstance(Context context){
+		if (instance == null) {
+			synchronized (ToastInTime.class) {
+				if (instance == null) {
+					instance = new ToastInTime(context);
+				}
+			}
+		}
+		return instance;
+	}
+	
+	  /**
      * 此方法需要自行调用init方法初始化
      * 
      * */
     public static ToastInTime getInstance(){ 
-    	if(instance == null){
-    		instance = new ToastInTime();
-    	}
-    	return instance;
+    	if (instance == null) {
+			synchronized (ToastInTime.class) {
+				if (instance == null) {
+					instance = new ToastInTime();
+				}
+			}
+		}
+		return instance;
     }
+    
+    /** 
+   	 * 
+   	 *  */
+   	public static void initToast(Context context){
+   		if(!isInited()){
+   			getInstance().init(context);
+   		}
+   	}
+
+	public static boolean isInited(){
+		if(instance == null){
+			return false;
+		}
+		return instance.isInited2();
+	}
+	
+	private boolean isInited2(){
+		return isInited;
+	}
    
-    public void init(Context context) {
+    private void init(Context context) {
         v = Toast.makeText(context, "", Toast.LENGTH_SHORT).getView();
         it = new Toast(context);
         it.setView(v);
+        isInited = true;
     }
    
     /**
