@@ -1,6 +1,7 @@
 package com.android_development.tool;
 
 import java.net.URLEncoder;
+import java.text.DecimalFormat;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.TreeMap;
@@ -91,5 +92,27 @@ public class OtherTool {
 			//return str1.compareTo(str2);//升序
 			return str2.compareTo(str1);//降序
 		}
+	}
+	
+	
+	//去掉小数点最后的0
+	public static String getPriceString(float price){
+		String string = "";
+		try {
+			DecimalFormat df = new DecimalFormat("#####0.00");//0.12输出"0.12"
+			string = df.format(price);
+			if(string.endsWith("0")){
+				if(string.endsWith(".00")){
+					//含2个0
+					string = string.split("\\.")[0];
+				}else{
+					//含1个0
+					string = string.substring(0, string.length() - 1);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return string;
 	}
 }
