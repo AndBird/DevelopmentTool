@@ -4,6 +4,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -48,12 +49,27 @@ public class ThreadTaskTool {
 	}
 	
 	/**提交任务*/
+	/*public void executeTask(Runnable runnable) throws RejectedExecutionException{
+		initThreadPool();
+		if(runnable != null){
+			executorService.execute(runnable);
+		}
+	}*/
+	
+	/**提交任务*/
 	public void executeTask(Runnable runnable){
 		initThreadPool();
 		if(runnable != null){
 			executorService.execute(runnable);
 		}
 	}
+	
+	/*public void executeTask(ThreadTaskInfo taskInfo){
+		initThreadPool();
+		if(taskInfo != null && taskInfo.runnable != null){
+			executorService.execute(taskInfo.runnable);
+		}
+	}*/
 	
 	private void initExecutorsIfNeed() {
 		if (executorService == null || executorService.isShutdown()) {
