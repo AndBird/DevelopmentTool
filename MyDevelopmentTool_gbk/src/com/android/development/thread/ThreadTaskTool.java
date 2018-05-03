@@ -45,6 +45,8 @@ public class ThreadTaskTool {
 			TimeUnit KEEP_ALIVE_TIME_UNIT = TimeUnit.SECONDS;
 			BlockingQueue<Runnable> taskQueue = new LinkedBlockingQueue<Runnable>();
 			executorService = new ThreadPoolExecutor(NUMBER_OF_CORES, NUMBER_OF_CORES * 2, KEEP_ALIVE_TIME, KEEP_ALIVE_TIME_UNIT, taskQueue);
+			/*executorService = new ThreadPoolExecutor(NUMBER_OF_CORES, NUMBER_OF_CORES*2, KEEP_ALIVE_TIME, KEEP_ALIVE_TIME_UNIT, taskQueue, 
+					new BackgroundThreadFactory(), new DefaultRejectedExecutionHandler());*/
 		}
 	}
 	
