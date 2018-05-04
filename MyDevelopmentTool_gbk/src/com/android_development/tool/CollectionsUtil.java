@@ -1,5 +1,7 @@
 package com.android_development.tool;
 
+import java.text.Collator;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.TreeMap;
@@ -34,6 +36,24 @@ public class CollectionsUtil {
 		public int compare(String str1, String str2) {
 			//return str1.compareTo(str2);//升序
 			return str2.compareTo(str1);//降序
+		}
+	}
+	
+	
+	/**对象排序
+	 * Collections.sort(list, new ObjectKeyComparator());
+	 * 
+	 * */
+	static class ObjectKeyComparator implements Comparator<Object>{
+		private Collator collator = Collator.getInstance();//点击查看中文api详解 
+		
+		@Override
+		public int compare(Object obj1, Object obj2) {
+			//return str1.compareTo(str2);//升序
+			//return str2.compareTo(str1);//降序
+			
+			//return collator.compare(obj1, obj2);
+			return 0;
 		}
 	}
 }

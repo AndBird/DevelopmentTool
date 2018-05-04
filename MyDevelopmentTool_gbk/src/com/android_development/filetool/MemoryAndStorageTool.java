@@ -11,7 +11,6 @@ import android.os.storage.StorageManager;
 import android.text.TextUtils;
 import android.text.format.Formatter;
 import android.util.Log;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
