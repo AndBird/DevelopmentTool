@@ -402,6 +402,8 @@ public class AppUpdateManager{
 	
 	private Runnable mDownloadRunnable = new Runnable(){			 
 		public void run() {
+			InputStream in = null;
+			RandomAccessFile fos = null;
 			try {
 				downloading = true;
 				File file = new File(saveDir);
@@ -438,8 +440,8 @@ public class AppUpdateManager{
 				int length = conn.getContentLength();
 				DebugUtils.printInfo(TAG + "/Runnable", "download file size = " + length);
 				if(-1 != length){
-					InputStream is = conn.getInputStream();
-					RandomAccessFile fos = new RandomAccessFile(downloadFile, "rwd");
+					in = conn.getInputStream();
+					fos = new RandomAccessFile(downloadFile, "rwd");
 					fos.seek(saveFileLength);
 					
 					appTotalSize = saveFileLength + length;
@@ -448,7 +450,7 @@ public class AppUpdateManager{
 					
 					stopDownload = false;
 					do{   		   		
-			    		int numread = is.read(buf);
+			    		int numread = in.read(buf);
 			    		if(numread < 0){
 			    			break;
 			    		}
@@ -466,8 +468,29 @@ public class AppUpdateManager{
 			    		fos.write(buf, 0, numread);
 			    	}while(!stopDownload);//点击取消就停止下载
 					
-					fos.close();
-					is.close();
+					if(fos != null){
+						fos.close();
+					}
+					fos = null;
+					
+					if(in != null){
+						in.close();
+					}
+					in = null;
+					
+					if(!stopDownload){
+			    		//下载完成通知安装
+						Message msg = new Message();
+		    	    	msg.what = Download_STATUS_SUCCESSFUL;
+		    	    	msg.arg1 = appTotalSize;
+		    	    	msg.arg2 = appTotalSize;
+						if(mUpdateHandler != null){
+			    	    	mUpdateHandler.sendMessage(msg);
+						}else{
+							mHandler.sendMessage(msg);
+						}
+			    		return ;
+			    	}
 				}else{
 					if(checkApkFileIsAll()){
 						stopDownload = false;//下载的包是完整的，就是下载完成
@@ -481,20 +504,6 @@ public class AppUpdateManager{
 					}
 					return ;
 				}
-				
-				if(!stopDownload){
-		    		//下载完成通知安装
-					Message msg = new Message();
-	    	    	msg.what = Download_STATUS_SUCCESSFUL;
-	    	    	msg.arg1 = appTotalSize;
-	    	    	msg.arg2 = appTotalSize;
-					if(mUpdateHandler != null){
-		    	    	mUpdateHandler.sendMessage(msg);
-					}else{
-						mHandler.sendMessage(msg);
-					}
-		    		return ;
-		    	}
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 				stopDownload = true;
@@ -513,6 +522,19 @@ public class AppUpdateManager{
 				}
 			}finally{
 				downloading = false;
+				try {
+					if(fos != null){
+						fos.close();
+					}
+					fos = null;
+					
+					if(in != null){
+						in.close();
+					}
+					in = null;
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	};
