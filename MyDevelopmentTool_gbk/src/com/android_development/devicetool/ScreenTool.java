@@ -10,6 +10,7 @@ import android.util.TypedValue;
 import android.view.Display;
 import android.view.Surface;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 
@@ -36,6 +37,11 @@ public class ScreenTool {
     public static int convertDpToPx(Context context, int dp) {
         return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.getResources().getDisplayMetrics()));
     }
+    
+    /**计算屏幕分辨率
+     * 
+     * @return int[2]{screenWidth, screenHeigth}
+     * */
     public static int[] getScreenSize(Activity activity){
 //           Display display = activity.getWindowManager().getDefaultDisplay();
 //           int screenWidth = display.getWidth();
@@ -50,6 +56,10 @@ public class ScreenTool {
         return new int[]{screenWidth, screenHeight};
     }
 
+    /**计算屏幕分辨率
+     * 
+     * @return int[2]{screenWidth, screenHeigth}
+     * */
     public static int[] getScreenSize(Context context){
         DisplayMetrics dm = context.getResources().getDisplayMetrics();
         int screenHeight = dm.heightPixels;
@@ -181,5 +191,89 @@ public class ScreenTool {
 	    views.getWindowVisibleDisplayFrame(frames);  
 	    int statusBarHeights = frames.top;  
 	    return statusBarHeights;
+    }
+    
+    /**
+     * 计算view的适配高度(宽度满屏，计算高度)
+     * 
+     * 以屏幕宽度为适配标准
+     * 
+     * */
+    public static int autoFitViewHeightBaseScreenWidth(Context context, int height, int baseScreenWidth){
+    	int[] size = getScreenSize(context);
+    	float xScale = size[0] * 1.0f / baseScreenWidth;
+    	if(xScale > 0){
+    		height = (int) (height * xScale);
+    	}
+    	return height;
+    }
+    
+    /**
+     * 计算view的适配高度(宽度满屏，计算高度)，并直接生效
+     * 
+     * 以屏幕宽度为适配标准
+     * 
+     * */
+    public static void autoFitViewHeightBaseScreenWidth(Context context, View v, int baseScreenWidth){
+    	if(v != null){
+	    	int height = autoFitViewHeightBaseScreenWidth(context, v.getMeasuredHeight(), baseScreenWidth);
+	    	ViewGroup.LayoutParams lp = v.getLayoutParams();
+	    	lp.height = height;
+	    	v.setLayoutParams(lp);
+    	}
+    }
+    
+    /**
+     * 计算view的适配尺寸(宽高都需要计算)
+     * 
+     * 以屏幕宽度和高度为适配标准，取最小缩放比
+     * 
+     * @param viewSize : view 的大小
+     * */
+    public static void autoFitViewHeightBaseScreenSize(Context context, int[] viewSize, int baseScreenWidth, int baseScreenHeight){
+    	int[] size = getScreenSize(context);
+    	float xScale = size[0] * 1.0f / baseScreenWidth;
+    	float yScale = size[1] * 1.0f / baseScreenHeight;
+    	float fitScale = xScale > yScale ? yScale : xScale;
+    	if(fitScale > 0){
+    		viewSize[0] = (int) (viewSize[0] * fitScale);
+    		viewSize[1] = (int) (viewSize[1] * fitScale);
+    	}
+    }
+    
+    /**
+     * 计算view的适配尺寸(宽高都需要计算)
+     * 
+     * 以屏幕宽度和高度为适配标准，取最小缩放比
+     * 
+     * @return int[2]{计算后的宽度， 计算后高度}
+     * */
+    public static int[] autoFitViewHeightBaseScreenSize(Context context, int width, int height, int baseScreenWidth, int baseScreenHeight){
+    	int[] size = getScreenSize(context);
+    	float xScale = size[0] * 1.0f / baseScreenWidth;
+    	float yScale = size[1] * 1.0f / baseScreenHeight;
+    	float fitScale = xScale > yScale ? yScale : xScale;
+    	if(fitScale > 0){
+    		width = (int) (width * fitScale);
+    		height = (int) (height * fitScale);
+    	}
+    	return new int[]{width, height};
+    }
+    
+    /**
+     * 适配view的尺寸(宽高都需要计算),并直接生效
+     * 
+     * 以屏幕宽度和高度为适配标准，取最小缩放比
+     * 
+     * */
+    public static void autoFitViewHeightBaseScreenSize(Context context, View v, int baseScreenWidth, int baseScreenHeight){
+    	if(v != null){
+    		int[] size = new int[]{v.getMeasuredWidth(), v.getMeasuredHeight()};
+	    	autoFitViewHeightBaseScreenSize(context, size, baseScreenWidth, baseScreenHeight);
+	    	ViewGroup.LayoutParams lp = v.getLayoutParams();
+	    	lp.width = size[0];
+	    	lp.height = size[1];
+	    	v.setLayoutParams(lp);
+    	}
     }
 }
