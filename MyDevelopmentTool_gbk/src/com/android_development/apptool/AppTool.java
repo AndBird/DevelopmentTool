@@ -4,6 +4,7 @@ import android.app.ActivityManager.RunningServiceInfo;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningAppProcessInfo;
 import android.app.ActivityManager.RunningTaskInfo;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
@@ -158,7 +159,7 @@ public class AppTool {
                 try {
                     // 可能由于某些原因导致程序无法启动，添加异常块保证程序不死掉
                     context.startActivity(intent);
-                } catch (NullPointerException e) {
+                } catch (ActivityNotFoundException e) {
                     Toast.makeText(context, "该程序无法启动！", Toast.LENGTH_SHORT).show();
                 }
             }

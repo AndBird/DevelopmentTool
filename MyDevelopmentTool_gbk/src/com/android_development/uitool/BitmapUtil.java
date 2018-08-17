@@ -1,11 +1,20 @@
 package com.android_development.uitool;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Matrix;
+import android.graphics.PixelFormat;
+import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.PaintDrawable;
 import android.media.ExifInterface;
+import android.util.Base64;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -206,4 +215,81 @@ public class BitmapUtil {
         }
         return degree;
     }
+    
+    /**
+     * Drawable 转bitmap
+     */
+    public static Bitmap createIconBitmap(Drawable icon, Context context, int width, int height) {
+            if (icon instanceof PaintDrawable) {
+                PaintDrawable painter = (PaintDrawable) icon;
+                painter.setIntrinsicWidth(width);
+                painter.setIntrinsicHeight(height);
+            } else if (icon instanceof BitmapDrawable) {
+                BitmapDrawable bitmapDrawable = (BitmapDrawable) icon;
+                Bitmap bitmap = bitmapDrawable.getBitmap();
+                if (bitmap.getDensity() == Bitmap.DENSITY_NONE) {
+                    bitmapDrawable.setTargetDensity(context.getResources().getDisplayMetrics());
+                }
+            }
+            int sourceWidth = icon.getIntrinsicWidth();
+            int sourceHeight = icon.getIntrinsicHeight();
+            if (sourceWidth > 0 && sourceHeight > 0) {
+                // There are intrinsic sizes.
+                if (width < sourceWidth || height < sourceHeight) {
+                    // It's too big, scale it down.
+                    final float ratio = (float) sourceWidth / sourceHeight;
+                    if (sourceWidth > sourceHeight) {
+                        height = (int) (width / ratio);
+                    } else if (sourceHeight > sourceWidth) {
+                        width = (int) (height * ratio);
+                    }
+                } else if (sourceWidth < width && sourceHeight < height) {
+                    // Don't scale up the icon
+                    width = sourceWidth;
+                    height = sourceHeight;
+                }
+            }
+
+            final Bitmap bitmap = Bitmap.createBitmap(width, height,
+                    Bitmap.Config.ARGB_8888);
+            final Canvas canvas = new Canvas();
+            canvas.setBitmap(bitmap);
+
+            final int left = 0;
+            final int top = 0;
+
+            //sOldBounds记录下drawable的bounds
+            Rect sOldBounds = new Rect();
+            sOldBounds.set(icon.getBounds());
+            icon.setBounds(left, top, left+width, top+height);
+            icon.draw(canvas);
+            icon.setBounds(sOldBounds);
+            canvas.setBitmap(null);
+            return bitmap;
+    }
+
+	/**将Drawable转自字符串
+	 * (由于setBounds，如果drawable已经显示，那么该方法需要在ui中操作)
+	 * */
+	public static String drawableToString(Drawable drawable) {  
+	    if(drawable != null) {  
+	        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(),  
+	                        drawable.getOpacity() != PixelFormat.OPAQUE ? Bitmap.Config.ARGB_8888  : Bitmap.Config.RGB_565);  
+	        Canvas canvas = new Canvas(bitmap);  
+	        drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());  
+	        drawable.draw(canvas);  
+	        int size = bitmap.getWidth() * bitmap.getHeight() * 4;  
+	      
+	        // 创建一个字节数组输出流,流的大小为size  
+	        ByteArrayOutputStream baos = new ByteArrayOutputStream(size);  
+	        // 设置位图的压缩格式，质量为100%，并放入字节数组输出流中  
+	        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);  
+	        // 将字节数组输出流转化为字节数组byte[]  
+	        byte[] imagedata = baos.toByteArray();  
+	        
+	        String icon= Base64.encodeToString(imagedata, Base64.DEFAULT);
+	        return icon;  
+	    }  
+	    return null;  
+	}
 }

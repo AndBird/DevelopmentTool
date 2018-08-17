@@ -2,6 +2,7 @@ package com.android_development.stringtool;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.text.DecimalFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -314,5 +315,26 @@ public class StringTool {
             }
             return new String(source);
         }
+        
+        /**去掉小数点最后的0*/
+    	public static String getPriceString(float price){
+    		String string = "";
+    		try {
+    			DecimalFormat df = new DecimalFormat("#####0.00");//0.12输出"0.12"
+    			string = df.format(price);
+    			if(string.endsWith("0")){
+    				if(string.endsWith(".00")){
+    					//含2个0
+    					string = string.split("\\.")[0];
+    				}else{
+    					//含1个0
+    					string = string.substring(0, string.length() - 1);
+    				}
+    			}
+    		} catch (Exception e) {
+    			e.printStackTrace();
+    		}
+			return string;
+    	}
 }
 

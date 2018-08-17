@@ -1,10 +1,12 @@
 package com.android_development.uitool;
 
+import java.io.File;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.widget.RemoteViews;
 
@@ -164,5 +166,71 @@ public class NotificationUtil {
 	
 			mBuilder.setContentIntent(pendingIntent);
 			manager.notify(0, mBuilder.build());
+		}
+		
+		/**隐藏通知栏
+		 * 
+		 * @param notificationId :
+		 * */
+		public static void hideNotification(Context context, int notificationId){
+			try {
+				NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+				manager.cancel(notificationId);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
+		/**
+		 * 显示下载进度条
+		 * 
+		 * @param title : 标题
+		 * @param progress : 当前进度
+		 * @param maxProgress ：最大进度
+		 * @param notificationId : 
+		 * 
+		 * */
+		public static void showNotification(Context context, String title, int logoResId, int progress, int maxProgress, int notificationId) {
+			try {
+				NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+				NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context);
+				//RemoteViews views = new RemoteViews(m_Context.getPackageName(), R.layout.upgrade_notification_layout);
+				//views.setImageViewResource(R.id.notification_large_icon, R.drawable.ic_launcher);
+				//views.setTextViewText(R.id.notification_title, title);
+				//views.setTextViewText(R.id.notification_text, content);
+
+				mBuilder.setContentTitle(title);
+				if(progress == maxProgress){
+					mBuilder.setContentText("下载完成，点击安装");
+				}else{
+					mBuilder.setContentText("下载中");
+				}
+				// 第一次提示消息的时候显示在通知栏上
+				mBuilder.setTicker(title);
+				mBuilder.setSmallIcon(logoResId);
+				// 自己维护通知的消失
+				mBuilder.setAutoCancel(true);
+				 //设置为不可清除模式
+				mBuilder.setOngoing(true);
+				//采用自定义view
+				//mBuilder.setContent(views);
+				//views.setProgressBar(R.id.progressBar, maxProgress, progress, false);
+				mBuilder.setProgress(maxProgress, progress, false);
+
+				if(progress == maxProgress){
+					//下载完整后，点击view启动安装
+					/*File apkfile = new File(filePath);
+					if (apkfile.exists()) {
+						Intent intent = new Intent(Intent.ACTION_VIEW);
+						intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+						intent.setDataAndType(Uri.parse("file://" + apkfile.toString()), "application/vnd.android.package-archive");
+						PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+						mBuilder.setContentIntent(pendingIntent);
+					}*/
+				}
+				manager.notify(notificationId, mBuilder.build());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 }
