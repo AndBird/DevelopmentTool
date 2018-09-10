@@ -97,7 +97,7 @@ public class BrightnessTool {
      * 
      * @param screenBrightness : 0-255
      */  
-     private void WindowBrightness(Window window, int screenBrightness){  
+     private void setWindowBrightness(Window window, int screenBrightness){  
        WindowManager.LayoutParams lp = window.getAttributes();  
        float f = screenBrightness / 255.0F;  
        lp.screenBrightness = f;  
