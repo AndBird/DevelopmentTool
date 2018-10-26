@@ -182,7 +182,7 @@ public class NotificationUtil {
 		}
 		
 		/**
-		 * 显示下载进度条
+		 * 显示下载进度条(为了防止频繁的通知导致应用吃紧，百分比增加一定的值才通知一次)
 		 * 
 		 * @param title : 标题
 		 * @param progress : 当前进度

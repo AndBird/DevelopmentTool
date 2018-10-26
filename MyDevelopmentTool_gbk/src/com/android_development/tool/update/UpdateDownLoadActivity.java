@@ -6,22 +6,25 @@ import java.io.File;
 import com.android_development.nettool.NetTool;
 import com.android_development.tool.DebugUtils;
 import com.android_development.uitool.CustomDialogUtils;
-import com.android_development.uitool.ResourceLoadTool;
 import com.android_development.uitool.CustomDialogUtils.CustomDialogClickListener;
 import com.android_development.uitool.CustomDialogUtils.CustomDialogSingleClickListener;
 import com.development.android.tool.R;
 
-
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.os.StatFs;
+import android.support.v4.app.NotificationCompat;
 import android.text.format.Formatter;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -30,14 +33,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class UpdateDownLoadActivity extends Activity{
-	private static final String TAG = UpdateDownLoadActivity.class.getName();
+	private final String TAG = UpdateDownLoadActivity.class.getName();
 	
 	public static final String INTENT_FORCE_UPDATE = "is_force_update";//是否是强制更新
-	
-	
-	public static final int Download_STATUS_FAILED = 1;
-	public static final int Download_STATUS_SUCCESSFUL = 2;
-	public static final int Download_TATUS_RUNNING = 3;
 	
 	private Handler updateHandler;
 	private TextView stateView, sizeView, progressView;
@@ -47,10 +45,20 @@ public class UpdateDownLoadActivity extends Activity{
 
 	private boolean forceUpdate = false;
 	private AlertDialog dlg = null;
+	
+	//显示通知栏
+	private NotificationManager notificationManager = null;
+	private NotificationCompat.Builder mBuilder = null;
+	private final int Notification_Id = 0;
+	/**上一次更新时的进度值*/
+	private int oldPercent = 0;
+	/**上一次更新的时间*/
+	private long lastUpdateTime = 0;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
+		DebugUtils.printInfo(TAG, "onCreate");
 		setContentView(R.layout.activity_update_download);
 		initView();
 		initHandler();
@@ -71,6 +79,9 @@ public class UpdateDownLoadActivity extends Activity{
 				@Override
 				public void onClick(View v) {
 					restart.setVisibility(View.INVISIBLE);
+					oldPercent = 0;
+					lastUpdateTime = 0;
+					showNotification(getString(R.string.dlg_msg_notice), 0, 100);
 					AppUpdateManager.getInstance().startDownload();
 				}
 			});
@@ -95,7 +106,7 @@ public class UpdateDownLoadActivity extends Activity{
 				//已经下载完成，就直接安装
 				isDownLoadFinish = true;
 				Message msg = updateHandler.obtainMessage();
-				msg.what = Download_STATUS_SUCCESSFUL;
+				msg.what = AppUpdateManager.Download_STATUS_SUCCESSFUL;
 				msg.arg1 = 100;
 				msg.sendToTarget();
 				showInstallConfirmDialog();
@@ -126,7 +137,7 @@ public class UpdateDownLoadActivity extends Activity{
 		 try {
 			    bar.setVisibility(View.VISIBLE);
 				switch(state){
-				case Download_STATUS_FAILED:
+				case AppUpdateManager.Download_STATUS_FAILED:
 					DebugUtils.debug(TAG, "更新失败");
 					if(!NetTool.isNetworkConnected(getApplicationContext())){
 						showAlertDialog(R.string.no_network);
@@ -136,8 +147,9 @@ public class UpdateDownLoadActivity extends Activity{
 						Toast.makeText(getApplicationContext(), R.string.download_fail, Toast.LENGTH_SHORT).show();
 					}
 					restart.setVisibility(View.VISIBLE);
+					hideNotification();
 					break;
-				case Download_STATUS_SUCCESSFUL:
+				case AppUpdateManager.Download_STATUS_SUCCESSFUL:
 					DebugUtils.debug(TAG, "Download_STATUS_SUCCESSFUL");
 					bar.setMax(100);
 					bar.setProgress(100);
@@ -145,14 +157,16 @@ public class UpdateDownLoadActivity extends Activity{
 					progressView.setText("100%");
 					isDownLoadFinish = true;
 					showInstallConfirmDialog();
+					showNotification(getString(R.string.update_dlg_title), 100, 100);
 					break;
-				case Download_TATUS_RUNNING:
+				case AppUpdateManager.Download_TATUS_RUNNING:
 					if(totalSize > 0){
 						bar.setMax(100);
 						int progress = downloadSize * 100 / totalSize;
 						bar.setProgress(progress);
 						sizeView.setText(Formatter.formatFileSize(getApplicationContext(), downloadSize) + "/" + Formatter.formatFileSize(getApplicationContext(), totalSize));
 						progressView.setText(progress + "%");
+						showNotification(getString(R.string.update_dlg_title), progress, 100);
 					}
 					break;
 				default:
@@ -260,7 +274,7 @@ public class UpdateDownLoadActivity extends Activity{
 		dlg.setCancelable(false);
 	}
 	
-	//正在下载更新时按返回键
+	/**正在下载更新时按返回键*/
 	private void showStopDownloadDialog() {
 		DebugUtils.debug(TAG, "showAlertDialog");
 		dlg = CustomDialogUtils.showCustomDialog(UpdateDownLoadActivity.this, R.string.dlg_msg_notice, R.string.stop_app_update_download, new CustomDialogClickListener() {
@@ -270,6 +284,7 @@ public class UpdateDownLoadActivity extends Activity{
 				CustomDialogUtils.hideDialog(dialog);
 				stopDownLoad(); //停止下载
 				if(forceUpdate){
+					hideNotification();
 					UpdateDownLoadActivity.this.finish();
 					AppUpdateManager.exitApp(UpdateDownLoadActivity.this);
 				}
@@ -320,7 +335,7 @@ public class UpdateDownLoadActivity extends Activity{
 		}
 		
 		
-		//下载完成弹出对话框是否安装
+		/**下载完成弹出对话框是否安装*/
 		private void showInstallConfirmDialog() {
 			DebugUtils.debug(TAG + "/showInstallConfirmDialog", "showInstallConfirmDialog");
 			AlertDialog dialog = CustomDialogUtils.showCustomDialog(UpdateDownLoadActivity.this, R.string.dlg_msg_notice, R.string.update_download_finish, 
@@ -345,5 +360,68 @@ public class UpdateDownLoadActivity extends Activity{
 			
 			dialog.setCanceledOnTouchOutside(!forceUpdate);
 			dialog.setCancelable(!forceUpdate);
+		}
+		
+		/**显示状态栏进度(比较慢)
+		 * 
+		 * 为了防止频繁的通知导致应用吃紧，百分比增加一定的值才通知一次
+		 * 
+		 * */
+		private void showNotification(String title, int progress, int maxProgress) {
+			try {
+				if(notificationManager == null){
+					notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+				    mBuilder = new NotificationCompat.Builder(getApplicationContext());
+					//RemoteViews views = new RemoteViews(m_Context.getPackageName(), R.layout.upgrade_notification_layout);
+					//views.setImageViewResource(R.id.notification_large_icon, R.drawable.ic_launcher);
+					//views.setTextViewText(R.id.notification_title, title);
+					//views.setTextViewText(R.id.notification_text, content);
+	
+					mBuilder.setContentTitle(title);
+					if(progress == maxProgress){
+						mBuilder.setContentText(getString(R.string.click_to_install));
+					}else{
+						mBuilder.setContentText(getString(R.string.downloading));
+					}
+					// 第一次提示消息的时候显示在通知栏上
+					mBuilder.setTicker(title);
+					mBuilder.setSmallIcon(R.drawable.ic_launcher);
+					// 自己维护通知的消失
+					mBuilder.setAutoCancel(true);
+					 //设置为不可清除模式
+					mBuilder.setOngoing(false);
+					//采用自定义view
+					//mBuilder.setContent(views);
+					//views.setProgressBar(R.id.progressBar, maxProgress, progress, false);
+				}
+				
+				//为了防止频繁的通知导致应用吃紧，百分比增加10且时间超过1000毫秒才通知一次
+				if(0 == oldPercent || 0 == lastUpdateTime || progress - 3 > oldPercent && (System.currentTimeMillis() - lastUpdateTime) >= 1000){
+					mBuilder.setProgress(maxProgress, progress, false);
+					oldPercent = progress;
+					lastUpdateTime = System.currentTimeMillis();
+					if(progress == maxProgress){
+						File apkfile = new File(AppUpdateManager.getInstance().getDownloadFilePath());
+						if (apkfile.exists()) {
+							Intent intent = new Intent(Intent.ACTION_VIEW);
+							intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+							intent.setDataAndType(Uri.parse("file://" + apkfile.toString()), "application/vnd.android.package-archive");
+							PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0,
+									intent, PendingIntent.FLAG_UPDATE_CURRENT);
+							mBuilder.setContentIntent(pendingIntent);
+						}
+					}
+					notificationManager.notify(Notification_Id, mBuilder.build());
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
+		/**隐藏通知栏*/
+		private void hideNotification(){
+			if(notificationManager != null){
+				notificationManager.cancel(Notification_Id);
+			}
 		}
 }

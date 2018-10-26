@@ -8,14 +8,12 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-
 import com.android_development.filetool.SharePreferenceTool;
 import com.android_development.nettool.NetTool;
 import com.android_development.tool.DebugUtils;
 import com.android_development.uitool.CustomDialogUtils;
 import com.android_development.uitool.CustomDialogUtils.CustomDialogClickListener;
 import com.development.android.tool.R;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -95,10 +93,14 @@ public class AppUpdateManager{
     }
     
     public static AppUpdateManager getInstance(){
-    	if(instance == null){
-    		instance = new AppUpdateManager();
-    	}
-    	return instance;
+    	if (instance == null) {
+			synchronized (AppUpdateManager.class) {
+				if (instance == null) {
+					instance = new AppUpdateManager();
+				}
+			}
+		}
+		return instance;
     }
     
     private AppUpdateManager(){
@@ -674,7 +676,7 @@ public class AppUpdateManager{
 			}
 		}
 		
-		//下载完成弹出对话框是否安装
+		/**下载完成弹出对话框是否安装*/
 		private void showInstallDialog() {
 			DebugUtils.printInfo(TAG + "/showInstallConfirmDialog", "showInstallConfirmDialog");
 			AlertDialog dialog = CustomDialogUtils.showCustomDialog(mContext, R.string.dlg_msg_notice, R.string.update_download_finish, 
@@ -696,5 +698,10 @@ public class AppUpdateManager{
 					});
 			dialog.setCanceledOnTouchOutside(false);
 			dialog.setCancelable(false);
+		}
+		
+		/**获取下载文件的详细路径*/
+		public String getDownloadFilePath(){
+			return saveFilePath;
 		}
 }

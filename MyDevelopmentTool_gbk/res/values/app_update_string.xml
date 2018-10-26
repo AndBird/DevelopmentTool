@@ -27,10 +27,13 @@
 	 <string name="current_version_is_old">当前不是最新版本,是否下载？</string>
 	 <string name="update_download_finish">更新包已下载完成, 是否安装?</string>
 	 <string name="download_fail">下载失败</string>
+	 <string name="downloading">下载中</string>
 	 
 	 <string name="stop_app_update_download">应用正在更新中，是否退出？</string>
 	 <string name="no_network">网络未连接</string>
 	 <string name="download_in_background">后台下载</string>
 	 <string name="available_memory_space_no_enough">存储空间不足</string>
 
+	  <!-- notification -->
+	 <string name="click_to_install">点击安装</string>
 </resources>
