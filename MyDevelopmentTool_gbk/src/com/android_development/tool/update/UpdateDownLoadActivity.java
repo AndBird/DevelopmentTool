@@ -9,7 +9,6 @@ import com.android_development.uitool.CustomDialogUtils;
 import com.android_development.uitool.CustomDialogUtils.CustomDialogClickListener;
 import com.android_development.uitool.CustomDialogUtils.CustomDialogSingleClickListener;
 import com.development.android.tool.R;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Notification;
@@ -376,13 +375,8 @@ public class UpdateDownLoadActivity extends Activity{
 					//views.setImageViewResource(R.id.notification_large_icon, R.drawable.ic_launcher);
 					//views.setTextViewText(R.id.notification_title, title);
 					//views.setTextViewText(R.id.notification_text, content);
-	
+
 					mBuilder.setContentTitle(title);
-					if(progress == maxProgress){
-						mBuilder.setContentText(getString(R.string.click_to_install));
-					}else{
-						mBuilder.setContentText(getString(R.string.downloading));
-					}
 					// 第一次提示消息的时候显示在通知栏上
 					mBuilder.setTicker(title);
 					mBuilder.setSmallIcon(R.drawable.ic_launcher);
@@ -396,10 +390,17 @@ public class UpdateDownLoadActivity extends Activity{
 				}
 				
 				//为了防止频繁的通知导致应用吃紧，百分比增加10且时间超过1000毫秒才通知一次
-				if(0 == oldPercent || 0 == lastUpdateTime || progress - 3 > oldPercent && (System.currentTimeMillis() - lastUpdateTime) >= 1000){
+				if(0 == progress || 100 == progress || 0 == lastUpdateTime || progress - 3 > oldPercent && (System.currentTimeMillis() - lastUpdateTime) >= 1000){
 					mBuilder.setProgress(maxProgress, progress, false);
 					oldPercent = progress;
 					lastUpdateTime = System.currentTimeMillis();
+					
+					if(progress == maxProgress){
+						mBuilder.setContentText(getString(R.string.click_to_install));
+					}else{
+						mBuilder.setContentText(getString(R.string.downloading));
+					}
+					
 					if(progress == maxProgress){
 						File apkfile = new File(AppUpdateManager.getInstance().getDownloadFilePath());
 						if (apkfile.exists()) {
@@ -410,6 +411,8 @@ public class UpdateDownLoadActivity extends Activity{
 									intent, PendingIntent.FLAG_UPDATE_CURRENT);
 							mBuilder.setContentIntent(pendingIntent);
 						}
+					}else{
+						mBuilder.setContentIntent(null);
 					}
 					notificationManager.notify(Notification_Id, mBuilder.build());
 				}
