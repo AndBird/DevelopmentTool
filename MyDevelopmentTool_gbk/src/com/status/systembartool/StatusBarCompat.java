@@ -19,6 +19,10 @@ import java.util.Properties;
 
 /**
  * 设置系统状态栏颜色
+ * 
+ * StatusBarCompat是一个用于设置系统状态栏颜色的兼容库，兼容Android 4.4.2(API 19)以上，使用简单，仅需要一行代码的调用
+ * 
+ * 最后在你的Activity的setContentView()方法调用之后，调用以下方法即可。StatusBarCompat.setStatusBarColor(this, color, lightStatusBar);或者是StatusBarCompat.setStatusBarColor(this, color);
  *
  * @version 0.5.1
  * @since 0.1
