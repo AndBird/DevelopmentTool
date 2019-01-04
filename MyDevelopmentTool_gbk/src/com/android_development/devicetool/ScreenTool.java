@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.Surface;
@@ -173,7 +174,7 @@ public class ScreenTool {
         valueAnimator.start();
     }
     
-    //获取状态栏高度
+    /**获取状态栏高度*/
     public static int getStatusBarHeight(Context context) {  
         int result = 0;  
         int resourceId = context.getResources().getIdentifier("status_bar_height", "dimen", "android");  
@@ -183,7 +184,7 @@ public class ScreenTool {
         return result;  
 	 }
     
-    //获取状态栏高度(activity启动后需要推迟一定时间才能获取到)
+    /**获取状态栏高度(activity启动后需要推迟一定时间才能获取到)*/
     public static int getStatusBarHeight(Activity activity){
 	    Rect frames = new Rect();  
 	    View views =  activity.getWindow().getDecorView();  
@@ -275,5 +276,128 @@ public class ScreenTool {
 	    	lp.height = size[1];
 	    	v.setLayoutParams(lp);
     	}
+    }
+    
+    /**获取屏幕对角线物理尺寸(英寸)
+     * 
+     * @return : 屏幕的对角线尺寸(英寸)或者-1
+     * */
+    public static float getScreenSizeInch(Context context){
+    	 try {
+    		  DisplayMetrics dm = context.getResources().getDisplayMetrics();
+    		  //水平分辨率
+    		  int screenWidth = dm.widthPixels; 
+    		  //垂直分辨率	
+    		  int screenHeight = dm.heightPixels; 
+	          Log.e(TAG, "screenWidth = " + screenWidth + " screenHeight = " + screenHeight);
+	          float size = (float)(Math.sqrt(Math.pow(screenWidth, 2) + Math.pow(screenHeight, 2)) / dm.densityDpi);
+	          //double size1 = Math.sqrt(Math.pow(screenWidth/dm.xdpi, 2) + Math.pow(screenHeight/dm.ydpi, 2));
+	          Log.e(TAG, "dm inch size=" + size);
+	          return size;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+    	return -1;
+    }
+    
+    /**获取屏幕对角线物理尺寸(毫米)
+     * 
+     * @return : 屏幕的对角线尺寸(毫米)或者-1
+     * */
+    public static float getScreenSizeMm(Context context){
+    	float size = getScreenSizeInch(context);
+        if(size > 0){
+            //1英寸= 25.4f毫米
+            return size * 25.4f;
+        }
+        return -1;
+    }
+    
+    /**获取屏幕的宽度物理尺寸(英寸)
+     * 
+     * @return 返回屏幕宽度尺寸
+     * */
+    private static float getScreenWidthInch2(Context context){
+    	//获取屏幕分辨率
+    	DisplayMetrics dm = context.getResources().getDisplayMetrics();
+    	//水平分辨率
+        int screenWidth = dm.widthPixels; 
+        //垂直分辨率	
+        int screenHeight = dm.heightPixels; 
+        //最小的当宽度
+        screenWidth = screenWidth < screenHeight ? screenWidth : screenHeight;
+        return screenWidth / dm.xdpi;
+    }
+    
+    
+    /**获取屏幕的宽度物理尺寸(英寸)
+     * 
+     * @return 返回屏幕宽度尺寸
+     * */
+    public static String getScreenWidthInch(Context context){
+        return String .format("%.2f", getScreenWidthInch2(context));
+    	
+    }
+    
+    /**获取屏幕的宽度物理尺寸(毫米)
+     * 
+     * @return 返回屏幕宽度尺寸
+     * */
+    public static String getScreenWidthMm(Context context){
+    	//获取屏幕分辨率
+    	DisplayMetrics dm = context.getResources().getDisplayMetrics();
+    	//水平分辨率
+        int screenWidth = dm.widthPixels; 
+        //垂直分辨率	
+        int screenHeight = dm.heightPixels; 
+        //最小的当宽度
+        screenWidth = screenWidth < screenHeight ? screenWidth : screenHeight;
+        //1英寸= 25.4f毫米
+        return String .format("%.2f", screenWidth * 25.4f / dm.xdpi);
+    	
+    }
+    
+    
+    /**获取屏幕的高度物理尺寸(英寸)
+     * 
+     * @return 返回屏幕高度尺寸
+     * */
+    private static float getScreenHeightInch2(Context context){
+    	//获取屏幕分辨率
+    	DisplayMetrics dm = context.getResources().getDisplayMetrics();
+    	//水平分辨率
+        int screenWidth = dm.widthPixels; 
+        //垂直分辨率	
+        int screenHeight = dm.heightPixels; 
+        //最大的当高度
+        screenHeight = screenWidth < screenHeight ? screenHeight : screenWidth;
+        return screenHeight / dm.ydpi;
+    }
+    
+    
+    /**获取屏幕的高度物理尺寸(英寸)
+     * 
+     * @return 返回屏幕高度尺寸
+     * */
+    public static String getScreenHeightInch(Context context){
+        return String .format("%.2f", getScreenHeightInch2(context));
+    	
+    }
+    
+    /**获取屏幕的高度物理尺寸(毫米)
+     * 
+     * @return 返回屏幕高度尺寸
+     * */
+    public static String getScreenHeightMm(Context context){
+    	//获取屏幕分辨率
+    	DisplayMetrics dm = context.getResources().getDisplayMetrics();
+    	//水平分辨率
+        int screenWidth = dm.widthPixels; 
+        //垂直分辨率	
+        int screenHeight = dm.heightPixels; 
+        //最大的当高度
+        screenHeight = screenWidth < screenHeight ? screenHeight : screenWidth;
+        //1英寸= 25.4f毫米
+        return String .format("%.2f", screenHeight * 25.4f / dm.ydpi);
     }
 }
