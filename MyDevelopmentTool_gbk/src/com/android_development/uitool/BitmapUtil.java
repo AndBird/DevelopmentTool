@@ -312,5 +312,17 @@ public class BitmapUtil {
                 matrix, true);
         return newbmp;
     }
+	
+	
+	/**获取图片字节大小*/
+	public static int getBitmapSize(Bitmap bitmap){
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){     //API 19
+			return bitmap.getAllocationByteCount();
+		} else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1){//API 12
+			return bitmap.getByteCount();
+		} else {
+			return bitmap.getRowBytes() * bitmap.getHeight(); //earlier version
+		}
+	}
 
 }
