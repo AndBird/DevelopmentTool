@@ -2,8 +2,10 @@ package com.android_development.uitool;
 
 import com.development.android.tool.R;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -230,4 +232,181 @@ public class CustomDialogUtils {
 		Resources res = context.getResources();
 		return showSingleButtonCustomDialog(context, res.getString(titleRes), res.getString(msgStrRes), null, listener);
 	}
+	
+	
+	 /**双按钮*/
+    public static AlertDialog showSystemDialog(Context context, int titleResId, String msgStr, final CustomDialogClickListener listener){
+		if(context != null){
+			
+		}
+    	return showSystemDialog(context, context.getString(titleResId), msgStr, null, null, listener);
+	}
+    
+    /**双按钮*/
+    public static AlertDialog showSystemDialog(Context context, String title, String msgStr, final CustomDialogClickListener listener){
+		return showSystemDialog(context, title, msgStr, null, null, listener);
+	}
+    
+    /**双按钮*/
+    public static AlertDialog showSystemDialog(Context context, String msgStr, final CustomDialogClickListener listener){
+		return showSystemDialog(context, null, msgStr, null, null, listener);
+	}
+    
+    /**双按钮*/
+    public static AlertDialog showSystemDialog(Context context, String msgStr, String cancel_button, String ok_button, final CustomDialogClickListener listener){
+    	return showSystemDialog(context, null, msgStr, cancel_button, ok_button, listener);
+    }
+    
+    /**双按钮*/
+    public static AlertDialog showSystemDialog(Context context, String title, String msgStr, String cancel_button, String ok_button, final CustomDialogClickListener listener){
+		AlertDialog dialog = null;
+		try {
+				AlertDialog.Builder builder = new AlertDialog.Builder(context);
+				dialog = builder.create();
+				
+				if(title != null){
+					builder.setTitle(title);
+				}
+				
+				builder.setMessage(msgStr);
+				if(cancel_button == null){
+					cancel_button = "取消";
+				}
+				if(ok_button == null){
+					ok_button = "确定";
+				}
+				
+				
+				final AlertDialog tmpDialog = dialog;
+				builder.setPositiveButton(ok_button, new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						if(listener != null){
+							listener.onOkClick(null, tmpDialog);
+						}else{
+							if(dialog != null){
+								dialog.dismiss();
+							}
+						}
+					}
+				});
+				
+				builder.setNegativeButton(cancel_button, new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						if(listener != null){
+							listener.onCancelClick(null, tmpDialog);
+						}else{
+							if(dialog != null){
+								dialog.dismiss();
+							}
+						}
+					}
+				});
+				
+				builder.show();
+				//dialog.show();
+			} catch (Exception e) {
+				dialog = null;
+				e.printStackTrace();
+			}
+			return dialog;
+	}
+    
+    
+    /**双按钮*/
+	public static AlertDialog showSystemDialog(Context context, int msgStrRes, final CustomDialogClickListener listener){
+		if(context == null){
+			return null;
+		}
+		Resources resources = context.getResources();
+		return showSystemDialog(context, null, resources.getString(msgStrRes), null, null, listener);
+	}  
+    
+	/**双按钮*/
+	public static AlertDialog showSystemDialog(Context context, int titleRes, int msgStrRes, final CustomDialogClickListener listener){
+		if(context == null){
+			return null;
+		}
+		Resources resources = context.getResources();
+		return showSystemDialog(context, resources.getString(titleRes), resources.getString(msgStrRes), null, null, listener);
+	}  
+	 
+	/**双按钮*/
+	public static AlertDialog showSystemDialog(Context context, int titleRes, int msgStrRes, int cancel_button_res, int ok_button_res, final CustomDialogClickListener listener){
+		if(context == null){
+			return null;
+		}
+		Resources resources = context.getResources();
+		return showSystemDialog(context, resources.getString(titleRes), resources.getString(msgStrRes), resources.getString(cancel_button_res), resources.getString(ok_button_res), listener);
+	}  
+	
+	/**双按钮*/
+	public static AlertDialog showSystemDialog(Context context, int msgStrRes, int cancel_button_res, int ok_button_res, final CustomDialogClickListener listener){
+		if(context == null){
+			return null;
+		}
+		Resources resources = context.getResources();
+		return showSystemDialog(context, null, resources.getString(msgStrRes), resources.getString(cancel_button_res), resources.getString(ok_button_res), listener);
+	}  
+	
+	
+	/**双按钮*/
+	public static AlertDialog showSystemDialog(Context context, String title, String msg, int cancel_button_res, int ok_button_res, final CustomDialogClickListener listener){
+		if(context == null){
+			return null;
+		}
+		Resources resources = context.getResources();
+		return showSystemDialog(context, title, msg, resources.getString(cancel_button_res), resources.getString(ok_button_res), listener);
+	}  
+	
+	
+	public static AlertDialog showSingleButtonSystemDialog(Activity activity, String msgStr, final CustomDialogSingleClickListener listener){
+		return showSingleButtonSystemDialog(activity, null, msgStr, listener);
+	}
+	
+	public static AlertDialog showSingleButtonSystemDialog(Activity activity, int titleResId, int msgResId, final CustomDialogSingleClickListener listener){
+		if(activity == null){
+			return null;
+		}
+		return showSingleButtonSystemDialog(activity, activity.getString(titleResId), activity.getString(msgResId), listener);
+	}
+	
+	public static AlertDialog showSingleButtonSystemDialog(Activity activity, String title, String msgStr, final CustomDialogSingleClickListener listener){
+		AlertDialog dialog = null;
+		try {
+			AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+			dialog = builder.create();
+			if(title != null){
+				builder.setTitle(title);
+			}
+			
+			if(msgStr != null){
+				builder.setMessage(msgStr);
+			}
+			
+			final AlertDialog tmpDialog = dialog;
+			builder.setNeutralButton("确定", new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					if(listener != null){
+						listener.onClick(null, tmpDialog);
+					}else{
+						if(tmpDialog != null){
+							dialog.dismiss();
+						}
+					}
+				}
+			});
+			
+			dialog.show();
+		} catch (Exception e) {
+			dialog = null;
+			e.printStackTrace();
+		}
+		return dialog;
+	}
+	
 }
+
+
