@@ -38,6 +38,23 @@ public class ScreenTool {
     public static int convertDpToPx(Context context, int dp) {
         return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.getResources().getDisplayMetrics()));
     }
+	
+	
+	/**
+     * pt转px
+     */
+    public static int pt2Px(float ptValue) {
+        DisplayMetrics metrics = Utils.getApp().getResources().getDisplayMetrics();
+        return (int) (ptValue * metrics.xdpi / 72f + 0.5);
+    }
+
+    /**
+     * px转pt
+     */
+    public static int px2Pt(float pxValue) {
+        DisplayMetrics metrics = Utils.getApp().getResources().getDisplayMetrics();
+        return (int) (pxValue * 72 / metrics.xdpi + 0.5);
+    }
     
     /**计算屏幕分辨率
      * 
