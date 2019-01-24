@@ -161,7 +161,7 @@ public class UpdateDownLoadActivity extends Activity{
 				case AppUpdateManager.Download_TATUS_RUNNING:
 					if(totalSize > 0){
 						bar.setMax(100);
-						int progress = downloadSize * 100 / totalSize;
+						int progress = (int) (downloadSize * 1.0 / totalSize * 100);
 						bar.setProgress(progress);
 						sizeView.setText(Formatter.formatFileSize(getApplicationContext(), downloadSize) + "/" + Formatter.formatFileSize(getApplicationContext(), totalSize));
 						progressView.setText(progress + "%");

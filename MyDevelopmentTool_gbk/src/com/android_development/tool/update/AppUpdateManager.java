@@ -448,7 +448,7 @@ public class AppUpdateManager{
 					
 					appTotalSize = saveFileLength + length;
 					int count = saveFileLength;
-					byte buf[] = new byte[1024];
+					byte buf[] = new byte[1024 * 300];
 					
 					stopDownload = false;
 					do{   		   		
